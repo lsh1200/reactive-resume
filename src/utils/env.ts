@@ -23,6 +23,9 @@ export const env = createEnv({
 		// Authentication
 		AUTH_SECRET: z.string().min(1),
 
+		// Dev convenience: bypass login (NODE_ENV=development only). Set to a row id from the `user` table.
+		DEV_AUTO_LOGIN_USER_ID: z.string().min(1).optional(),
+
 		// Social Auth (Google)
 		GOOGLE_CLIENT_ID: z.string().min(1).optional(),
 		GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),

@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { env } from "@/utils/env";
 import type { Locale } from "@/utils/locale";
 import { auth } from "../auth/config";
+import { tryDevAutoLoginSession } from "../auth/dev-bypass";
 import { db } from "../drizzle/client";
 import { user } from "../drizzle/schema";
 
@@ -15,12 +16,14 @@ interface ORPCContext {
 async function getUserFromHeaders(headers: Headers): Promise<User | null> {
 	try {
 		const result = await auth.api.getSession({ headers });
-		if (!result || !result.user) return null;
-
-		return result.user;
+		if (result?.user) return result.user;
 	} catch {
-		return null;
+		// fall through to dev bypass
 	}
+
+	const devSession = await tryDevAutoLoginSession();
+	if (devSession?.user) return devSession.user as unknown as User;
+	return null;
 }
 
 async function getUserFromApiKey(apiKey: string): Promise<User | null> {

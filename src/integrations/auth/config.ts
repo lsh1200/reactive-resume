@@ -92,6 +92,11 @@ const getAuthConfig = () => {
 			useSecureCookies: env.APP_URL.startsWith("https://"),
 		},
 
+		session: {
+			expiresIn: 60 * 60 * 24 * 365,
+			updateAge: 60 * 60 * 24 * 30,
+		},
+
 		emailAndPassword: {
 			enabled: !env.FLAG_DISABLE_EMAIL_AUTH,
 			autoSignIn: true,

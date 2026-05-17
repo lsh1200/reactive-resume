@@ -2,6 +2,7 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { authClient } from "./client";
 import { auth } from "./config";
+import { tryDevAutoLoginSession } from "./dev-bypass";
 import type { AuthSession } from "./types";
 
 export const getSession = createIsomorphicFn()
@@ -12,5 +13,6 @@ export const getSession = createIsomorphicFn()
 	})
 	.server(async (): Promise<AuthSession | null> => {
 		const result = await auth.api.getSession({ headers: getRequestHeaders() });
-		return result as AuthSession | null;
+		if (result) return result as AuthSession;
+		return await tryDevAutoLoginSession();
 	});
