@@ -391,6 +391,17 @@ const itemRenderers: { [K in SectionType]: ItemRenderer<K> } = {
 			{ value: item.period, jsonPath: `sections.projects.items[${i}].period`, italic: true },
 		]);
 		emitRich(b, item.description, `sections.projects.items[${i}].description`);
+		if (item.website?.url) {
+			const label = item.website.label?.trim() || item.website.url;
+			const { start, end } = insertRaw(b, label);
+			trackField(b, start, end, `sections.projects.items[${i}].website`);
+			applyTextStyle(b, start, end, {
+				link: { url: item.website.url },
+				underline: true,
+				foregroundColor: { color: { rgbColor: b.primary } },
+			});
+			insertRaw(b, "\n");
+		}
 		insertRaw(b, "\n");
 	},
 	skills: (b, item, i) => {
