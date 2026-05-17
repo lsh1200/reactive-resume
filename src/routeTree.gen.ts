@@ -38,6 +38,8 @@ import { Route as DashboardSettingsApiKeysRouteImport } from "./routes/dashboard
 import { Route as DashboardSettingsAiRouteImport } from "./routes/dashboard/settings/ai";
 import { Route as ApiRpcSplatRouteImport } from "./routes/api/rpc.$";
 import { Route as ApiOpenapiSplatRouteImport } from "./routes/api/openapi.$";
+import { Route as ApiGoogleDocsStartRouteImport } from "./routes/api/google-docs.start";
+import { Route as ApiGoogleDocsCallbackRouteImport } from "./routes/api/google-docs.callback";
 import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth.$";
 import { Route as DashboardSettingsAuthenticationIndexRouteImport } from "./routes/dashboard/settings/authentication/index";
 
@@ -189,6 +191,16 @@ const ApiOpenapiSplatRoute = ApiOpenapiSplatRouteImport.update({
   path: "/api/openapi/$",
   getParentRoute: () => rootRouteImport,
 } as any);
+const ApiGoogleDocsStartRoute = ApiGoogleDocsStartRouteImport.update({
+  id: "/api/google-docs/start",
+  path: "/api/google-docs/start",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ApiGoogleDocsCallbackRoute = ApiGoogleDocsCallbackRouteImport.update({
+  id: "/api/google-docs/callback",
+  path: "/api/google-docs/callback",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: "/api/auth/$",
   path: "/api/auth/$",
@@ -221,6 +233,8 @@ export interface FileRoutesByFullPath {
   "/dashboard/": typeof DashboardIndexRoute;
   "/mcp/": typeof McpIndexRoute;
   "/api/auth/$": typeof ApiAuthSplatRoute;
+  "/api/google-docs/callback": typeof ApiGoogleDocsCallbackRoute;
+  "/api/google-docs/start": typeof ApiGoogleDocsStartRoute;
   "/api/openapi/$": typeof ApiOpenapiSplatRoute;
   "/api/rpc/$": typeof ApiRpcSplatRoute;
   "/dashboard/settings/ai": typeof DashboardSettingsAiRoute;
@@ -250,6 +264,8 @@ export interface FileRoutesByTo {
   "/dashboard": typeof DashboardIndexRoute;
   "/mcp": typeof McpIndexRoute;
   "/api/auth/$": typeof ApiAuthSplatRoute;
+  "/api/google-docs/callback": typeof ApiGoogleDocsCallbackRoute;
+  "/api/google-docs/start": typeof ApiGoogleDocsStartRoute;
   "/api/openapi/$": typeof ApiOpenapiSplatRoute;
   "/api/rpc/$": typeof ApiRpcSplatRoute;
   "/dashboard/settings/ai": typeof DashboardSettingsAiRoute;
@@ -284,6 +300,8 @@ export interface FileRoutesById {
   "/dashboard/": typeof DashboardIndexRoute;
   "/mcp/": typeof McpIndexRoute;
   "/api/auth/$": typeof ApiAuthSplatRoute;
+  "/api/google-docs/callback": typeof ApiGoogleDocsCallbackRoute;
+  "/api/google-docs/start": typeof ApiGoogleDocsStartRoute;
   "/api/openapi/$": typeof ApiOpenapiSplatRoute;
   "/api/rpc/$": typeof ApiRpcSplatRoute;
   "/dashboard/settings/ai": typeof DashboardSettingsAiRoute;
@@ -318,6 +336,8 @@ export interface FileRouteTypes {
     | "/dashboard/"
     | "/mcp/"
     | "/api/auth/$"
+    | "/api/google-docs/callback"
+    | "/api/google-docs/start"
     | "/api/openapi/$"
     | "/api/rpc/$"
     | "/dashboard/settings/ai"
@@ -347,6 +367,8 @@ export interface FileRouteTypes {
     | "/dashboard"
     | "/mcp"
     | "/api/auth/$"
+    | "/api/google-docs/callback"
+    | "/api/google-docs/start"
     | "/api/openapi/$"
     | "/api/rpc/$"
     | "/dashboard/settings/ai"
@@ -380,6 +402,8 @@ export interface FileRouteTypes {
     | "/dashboard/"
     | "/mcp/"
     | "/api/auth/$"
+    | "/api/google-docs/callback"
+    | "/api/google-docs/start"
     | "/api/openapi/$"
     | "/api/rpc/$"
     | "/dashboard/settings/ai"
@@ -404,6 +428,8 @@ export interface RootRouteChildren {
   PrinterResumeIdRoute: typeof PrinterResumeIdRoute;
   McpIndexRoute: typeof McpIndexRoute;
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute;
+  ApiGoogleDocsCallbackRoute: typeof ApiGoogleDocsCallbackRoute;
+  ApiGoogleDocsStartRoute: typeof ApiGoogleDocsStartRoute;
   ApiOpenapiSplatRoute: typeof ApiOpenapiSplatRoute;
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute;
   UploadsUserIdSplatRoute: typeof UploadsUserIdSplatRoute;
@@ -614,6 +640,20 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ApiOpenapiSplatRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/api/google-docs/start": {
+      id: "/api/google-docs/start";
+      path: "/api/google-docs/start";
+      fullPath: "/api/google-docs/start";
+      preLoaderRoute: typeof ApiGoogleDocsStartRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/api/google-docs/callback": {
+      id: "/api/google-docs/callback";
+      path: "/api/google-docs/callback";
+      fullPath: "/api/google-docs/callback";
+      preLoaderRoute: typeof ApiGoogleDocsCallbackRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/api/auth/$": {
       id: "/api/auth/$";
       path: "/api/auth/$";
@@ -718,6 +758,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrinterResumeIdRoute: PrinterResumeIdRoute,
   McpIndexRoute: McpIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiGoogleDocsCallbackRoute: ApiGoogleDocsCallbackRoute,
+  ApiGoogleDocsStartRoute: ApiGoogleDocsStartRoute,
   ApiOpenapiSplatRoute: ApiOpenapiSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
   UploadsUserIdSplatRoute: UploadsUserIdSplatRoute,

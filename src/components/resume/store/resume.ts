@@ -1,5 +1,6 @@
 import { t } from "@lingui/core/macro";
 import { debounce } from "es-toolkit";
+import { set as setPath } from "es-toolkit/compat";
 import isDeepEqual from "fast-deep-equal";
 import type { WritableDraft } from "immer";
 import { current } from "immer";
@@ -22,6 +23,7 @@ type ResumeStoreState = {
 type ResumeStoreActions = {
 	initialize: (resume: Resume | null) => void;
 	updateResumeData: (fn: (draft: WritableDraft<ResumeData>) => void) => void;
+	setFieldPreview: (jsonPath: string, value: unknown) => void;
 };
 
 type ResumeStore = ResumeStoreState & ResumeStoreActions;
@@ -64,6 +66,15 @@ export const useResumeStore = create<ResumeStore>()(
 
 					fn(state.resume.data);
 					syncResume(current(state.resume));
+				});
+			},
+
+			// Visual-only mutation: changes the in-memory resume.data without persisting to the DB.
+			// Used by the Codex proposal preview toggles so the user can compare before/after.
+			setFieldPreview: (jsonPath, value) => {
+				set((state) => {
+					if (!state.resume) return state;
+					setPath(state.resume.data as unknown as object, jsonPath, value);
 				});
 			},
 		})),

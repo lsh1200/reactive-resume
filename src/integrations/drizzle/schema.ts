@@ -217,6 +217,171 @@ export const resumeStatistics = pg.pgTable("resume_statistics", {
 		.$onUpdate(() => /* @__PURE__ */ new Date()),
 });
 
+export const resumeReviewSession = pg.pgTable(
+	"resume_review_session",
+	{
+		id: pg
+			.uuid("id")
+			.notNull()
+			.primaryKey()
+			.$defaultFn(() => generateId()),
+		resumeId: pg
+			.uuid("resume_id")
+			.notNull()
+			.references(() => resume.id, { onDelete: "cascade" }),
+		userId: pg
+			.uuid("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		docId: pg.text("doc_id").notNull(),
+		docUrl: pg.text("doc_url").notNull(),
+		pdfDriveFileId: pg.text("pdf_drive_file_id"),
+		pdfDriveUrl: pg.text("pdf_drive_url"),
+		recruiterEmail: pg.text("recruiter_email"),
+		fieldMap: pg.jsonb("field_map").notNull(),
+		status: pg.text("status").notNull().default("open"),
+		lastSyncedAt: pg.timestamp("last_synced_at", { withTimezone: true }),
+		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date()),
+	},
+	(t) => [
+		pg.index().on(t.userId, t.status),
+		pg.index().on(t.resumeId, t.status),
+		pg.unique().on(t.docId),
+	],
+);
+
+export const resumeCodexProposal = pg.pgTable(
+	"resume_codex_proposal",
+	{
+		id: pg
+			.uuid("id")
+			.notNull()
+			.primaryKey()
+			.$defaultFn(() => generateId()),
+		resumeId: pg
+			.uuid("resume_id")
+			.notNull()
+			.references(() => resume.id, { onDelete: "cascade" }),
+		userId: pg
+			.uuid("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		batchId: pg.uuid("batch_id").notNull(),
+		title: pg.text("title").notNull(),
+		jsonPath: pg.text("json_path").notNull(),
+		beforeValue: pg.jsonb("before_value"),
+		afterValue: pg.jsonb("after_value"),
+		reasoning: pg.text("reasoning"),
+		commentIds: pg.text("comment_ids").array().notNull().default([]),
+		driveCommentIds: pg.text("drive_comment_ids").array().notNull().default([]),
+		docId: pg.text("doc_id"),
+		status: pg.text("status").notNull().default("pending"),
+		decidedAt: pg.timestamp("decided_at", { withTimezone: true }),
+		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date()),
+	},
+	(t) => [
+		pg.index().on(t.resumeId, t.status),
+		pg.index().on(t.batchId),
+		pg.index().on(t.userId),
+	],
+);
+
+export const resumeCodexUndo = pg.pgTable(
+	"resume_codex_undo",
+	{
+		resumeId: pg
+			.uuid("resume_id")
+			.notNull()
+			.primaryKey()
+			.references(() => resume.id, { onDelete: "cascade" }),
+		userId: pg
+			.uuid("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		previousData: pg.jsonb("previous_data").$type<ResumeData>().notNull(),
+		appliedCommentIds: pg.text("applied_comment_ids").array().notNull().default([]),
+		driveCommentIds: pg.text("drive_comment_ids").array().notNull().default([]),
+		docId: pg.text("doc_id"),
+		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date()),
+	},
+	(t) => [pg.index().on(t.userId)],
+);
+
+export const resumeReviewComment = pg.pgTable(
+	"resume_review_comment",
+	{
+		id: pg
+			.uuid("id")
+			.notNull()
+			.primaryKey()
+			.$defaultFn(() => generateId()),
+		sessionId: pg
+			.uuid("session_id")
+			.notNull()
+			.references(() => resumeReviewSession.id, { onDelete: "cascade" }),
+		driveCommentId: pg.text("drive_comment_id").notNull(),
+		jsonPath: pg.text("json_path"),
+		anchoredText: pg.text("anchored_text"),
+		commentText: pg.text("comment_text").notNull(),
+		authorName: pg.text("author_name"),
+		authorEmail: pg.text("author_email"),
+		status: pg.text("status").notNull().default("open"),
+		driveCreatedAt: pg.timestamp("drive_created_at", { withTimezone: true }),
+		syncedAt: pg.timestamp("synced_at", { withTimezone: true }).notNull().defaultNow(),
+		appliedAt: pg.timestamp("applied_at", { withTimezone: true }),
+		appliedNote: pg.text("applied_note"),
+		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date()),
+	},
+	(t) => [
+		pg.unique().on(t.sessionId, t.driveCommentId),
+		pg.index().on(t.sessionId, t.status),
+	],
+);
+
+export const googleDocsConnection = pg.pgTable(
+	"google_docs_connection",
+	{
+		userId: pg
+			.uuid("user_id")
+			.notNull()
+			.primaryKey()
+			.references(() => user.id, { onDelete: "cascade" }),
+		googleSub: pg.text("google_sub").notNull(),
+		googleEmail: pg.text("google_email").notNull(),
+		accessToken: pg.text("access_token").notNull(),
+		refreshToken: pg.text("refresh_token"),
+		scope: pg.text("scope").notNull(),
+		expiresAt: pg.timestamp("expires_at", { withTimezone: true }).notNull(),
+		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp("updated_at", { withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date()),
+	},
+	(t) => [pg.index().on(t.googleSub)],
+);
+
 export const apikey = pg.pgTable(
 	"apikey",
 	{
